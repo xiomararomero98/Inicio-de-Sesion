@@ -1,7 +1,6 @@
 package InicioDeSesion.Inicio_De_Sesion.Service;
 
 import InicioDeSesion.Inicio_De_Sesion.WebClient.UsuarioClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -9,8 +8,11 @@ import java.util.Map;
 @Service
 public class InicioSesionService {
 
-    @Autowired
-    private UsuarioClient usuarioClient;
+    private final UsuarioClient usuarioClient;
+
+    public InicioSesionService(UsuarioClient usuarioClient) {
+        this.usuarioClient = usuarioClient;
+    }
 
     public String iniciarSesion(String correo, String clavePlain) {
         // Consultar usuario desde microservicio control de usuarios
