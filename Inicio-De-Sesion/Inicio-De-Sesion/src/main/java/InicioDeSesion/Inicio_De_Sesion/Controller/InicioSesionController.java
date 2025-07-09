@@ -35,7 +35,9 @@ public class InicioSesionController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Inicio de sesión exitoso"),
         @ApiResponse(responseCode = "400", description = "Faltan datos en la solicitud"),
-        @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+        @ApiResponse(responseCode = "401", description = "Contraseña incorrecta"),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping
     public ResponseEntity<?> login(@RequestBody Map<String, String> datos) {
@@ -50,7 +52,14 @@ public class InicioSesionController {
             String rol = inicioSesionService.iniciarSesion(correo, clave);
             return ResponseEntity.ok(Map.of("rol", rol));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            String mensaje = e.getMessage();
+            if ("Usuario no encontrado".equals(mensaje)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensaje);
+            } else if ("Contraseña incorrecta".equals(mensaje)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mensaje);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en el servidor");
+            }
         }
     }
 }
